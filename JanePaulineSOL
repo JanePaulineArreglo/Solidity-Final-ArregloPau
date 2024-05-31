@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MyToken {
+    // State variables
+    string public tokenName = "Pauline";
+    string public tokenAbbrv = "Jane";
+    uint256 public totalSupply;
+    mapping(address => uint256) public balance;
+
+    // Events
+    event Mint(address indexed _to, uint256 _value);
+    event Burn(address indexed _from, uint256 _value);
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    // Mint tokens and assign to an address
+    function mint(address _to, uint256 _value) public {
+        totalSupply += _value;
+        balance[_to] += _value;
+        emit Mint(_to, _value);
+        emit Transfer(address(0), _to, _value);
+    }
+
+    // Burn tokens from a specific address
+    function burn(address _from, uint256 _value) public {
+        require(balance[_from] >= _value, "Insufficient balance");
+        totalSupply -= _value;
+        balance[_from] -= _value;
+        emit Burn(_from, _value);
+        emit Transfer(_from, address(0), _value);
+    }
+
+    // Transfer tokens from sender to another address
+    function transfer(address _to, uint256 _value) public {
+        require(balance[msg.sender] >= _value, "Insufficient balance");
+        balance[msg.sender] -= _value;
+        balance[_to] += _value;
+        emit Transfer(msg.sender, _to, _value);
+    }
+
+    // Get the balance of an address
+    function balanceOf(address _owner) public view returns (uint256) {
+        return balance[_owner];
+    }
+}
